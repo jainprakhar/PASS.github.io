@@ -10,50 +10,86 @@
     </head>
     <body>
         
-        <h1>PASS : Professor Assistance with Automatic Lecture Profiling</h1>
-        <h2>This is your guide!</h2>
+        <div style="text-align: center;background: #80cbc4; text-indent: inherit"> <h1>PASS : Professor Assistance with Automatic Lecture Profiling</h1> </div>
+        
         
         <!--
             MADE WITH <3 AND JAVASCRIPT
         -->
         
+        <p style = "text-align: center"><img src="Picture1.png" style = "height: 300px" > </p>
+        <p style="text-align: center">Figure 1: Overview of PASS</p>
+        
         <p>
-            Welcome to Brackets, a modern open-source code editor that understands web design. It's a lightweight,
-            yet powerful, code editor that blends visual tools into the editor so you get the right amount of help
-            when you want it.
+            In this paper, we propose a multimedia framework for automatic
+            teaching feedback to the teachers. We employ audio, video, and text
+            analysis to derive a set of attributes that quantify the interaction
+            between student and teacher. The feedback is very critical for the
+            teachers to improve their pedagogy. In the literature, there have
+            been works on measuring the state of students in a classroom,
+            such as alertness level and interest; however, to the best of our
+            knowledge, there are no works on quantifying student-teacher
+            interaction. Since the proposed method is completely automatic, it
+            also addresses the limitation of manual students feedback which is
+            limited to once or twice per semester. We have build a prototype
+            systems to demonstrate the framework. Experimental results on
+            real classroom scenario show promising results.
         </p>
         
-        <!--
-            WHAT IS BRACKETS?
-        -->
+      
         <p>
-            <em>Brackets is a different type of editor.</em>
-            Brackets has some unique features like Quick Edit, Live Preview and others that you may not find in other
-            editors. Brackets is written in JavaScript, HTML and CSS. That means that most of you using Brackets
-            have the skills necessary to modify and extend the editor. In fact, we use Brackets every day to build
-            Brackets. To learn more about how to use the key features, read on.
+            Current student feedback systems have the following limitations:
+            <ul>
+                <li> Coarse feedback: Students rate overall quality of the lecture, they are not able to give feedback individual aspects of lecture such as student participation, amount of interaction.</li>
+                <li>Lack of data: It is not necessary that all students will give you feedback, here you may lack in getting all required survey data.</li>
+                <li>Biases: Even after making feedback form a compulsion for each student, they may not give you unbiased feedback. Generally students don't want to give feedback by answering some question.</li>
+                <li>Scalability: You cannot take feedback anytime, it is infeasible for students to fll feedback form more frequently.</li>
+                <li>Wrong observation: A student's judgmental perspective may
+                    be wrong. He may consider a good teacher as bad due to
+                    some personal or individual problem and may give negative
+                    feedback that may lead overall down rating of teacher.</li>
+            </ul>
         </p>
         
-        <!--
-            GET STARTED WITH YOUR OWN FILES
-        -->
+    
         
-        <h3>Projects in Brackets</h3>
+        <h1>PASS : Professor Assistance System</h1>
         <p>
-            In order to edit your own code using Brackets, you can just open the folder containing your files.
-            Brackets treats the currently open folder as a "project"; features like Code Hints, Live Preview and
-            Quick Edit only use files within the currently open folder.
+            In this section we describe details of proposed feedback system.
+            An overview of the PASS framework is shown in Fig 1. We place a
+            smartphone in the center of the classroom and record audio and
+            video. While audio records voice of students as well as teacher, the
+            video only records teacher's actions. The goal of audio and video
+            analysis is to measure the interaction attributes. These attributes
+            are measured at diﬀerent stages of the framework. Total interaction time is also measured in later sections, student and teaching time are separated and finally number of questions is determined in question detection section. We also report the performance of individual steps in this section. All the tests and experiments reported in this
+            section are conducted on real classroom data.
         </p>
-        
-        <samp>
-            Once you're ready to get out of this sample project and edit your own code, you can use the dropdown
-            in the left sidebar to switch folders. Right now, the dropdown says "Getting Started" - that's the
-            folder containing the file you're looking at right now. Click on the dropdown and choose "Open Folder…"
-            to open your own folder.
-            You can also use the dropdown later to switch back to folders you've opened previously, including this
-            sample project.
-        </samp>
-        
+    
+    
+    <h2> Pre-processing</h2>
+    In order to come up with desirable and valuable feedback system,
+    pre-processing of audio plays a crucial role in it. For our audio
+    dataset we had two preprocessing steps : (1) Noise removal (2)
+    Silence detection and removal. Silence detection and removal also
+    provides total interaction time during the lecture, i.e., the total
+    talking time of teacher as well as student.
+    
+    <h4>Noise Removal</h4>
+    The real time audio clip has surrounding
+noise and other unavoidable classroom noises like those of fans and ACs. We suppressed the ambient noises of classroom using ClearRecord App . It uses ambient noise reduction technique torecord
+conversational in harsh noisy environments. 
+    
+    <h4>Silence Detection and Removal</h4>
+    Under this preprocessing
+phase, we removed the silence from the audio signals using various
+techniques namely Zero crossing rate (ZCR) and Short Term Energy
+(STE). Apart from the standard silence removal procedures
+we also used DetectVoiced method. The algorithm
+uses two audio features: energy and the spectral centroid. Then it
+applies threshold to remove segments containing silence. Given
+below is brief details of the silence detection and removal method
+considered.
+ 
         <!--
             THE RELATIONSHIP BETWEEN HTML, CSS AND JAVASCRIPT
         -->
