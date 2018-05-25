@@ -7,6 +7,14 @@
         <title>GETTING STARTED WITH BRACKETS</title>
         <meta name="description" content="An interactive getting started guide for Brackets.">
         <link rel="stylesheet" href="main.css">
+        
+        <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+  <script>
+  MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+  </script>
+        
     </head>
     <body>
         
@@ -90,154 +98,404 @@ applies threshold to remove segments containing silence. Given
 below is brief details of the silence detection and removal method
 considered.
  
-        <!--
-            THE RELATIONSHIP BETWEEN HTML, CSS AND JAVASCRIPT
-        -->
-        <h3>Quick Edit for CSS and JavaScript</h3>
-        <p>
-            No more switching between documents and losing your context. When editing HTML, use the
-            <kbd>Cmd/Ctrl + E</kbd> shortcut to open a quick inline editor that displays all the related CSS.
-            Make a tweak to your CSS, hit <kbd>ESC</kbd> and you're back to editing HTML, or just leave the
-            CSS rules open and they'll become part of your HTML editor. If you hit <kbd>ESC</kbd> outside of
-            a quick inline editor, they'll all collapse. Quick Edit will also find rules defined in LESS and
-            SCSS files, including nested rules.
-        </p>
+    <ul>
+        <li>Zero Crossing Rate(ZCR) : A running sample window size
+of 50 ms was moved over the audio signal, with 50% overlab
+between consecutive windows . We calculated the average
+ZCR for each sample window using below equation:
+         <h4>$$Z(i) =  \frac{1}{2W_{L}}   \sum_{n=1}^{W_{L}}    \left | sgn [x_{i}(n)] -  sgn [x_{i}(n-1)] \right|$$</h4>
+        where Z(i) is ZCR of i<sup>th</sup> window and W<sub>L</sub> is the window length. Here sgn() is defined as :
+            <h5>$$sgn[x_{i}(n)] = \begin{cases}
+   1, & \text{if $x_{i}(n)>=0$}.\\
+   -1, & \text{otherwise}.
+ \end{cases}$$</h5>
+        </li>
+        <li>Short Term Energy(STE) : Similarly, for STE we used a
+running window of 50ms with 50% overlap as given below:
+        <h4>$$E(i) =  \frac{1}{W_{L}}   \sum_{n=1}^{W_{L}}\left | x_{i}(n) \right |^{2}$$</h4>where E(i) is the energy of the i<sup>th</sup> window. A thresholding
+parameter was used to classify each window as silence or
+non-silence. Usually silence window has lower STE value
+than voice.</li>
+        <li>DetectVoiced : The algorithm uses two features namely short
+term energy and spectral centroid. This algorithm is based on
+thresholding. First we compute the histogram of the feature
+values then we apply median flter on the histogram for
+smoothing. We fnd the local maxima of the histogram. The
+threshold value is calculated using the frst and second local
+maxima value. In this way, we get two thresholds - one based
+on the short term energy and another based on spectral
+centroid. Only those segments are selected whose feature
+values are greater than these two thresholds.</li>
+    </ul>
+    The comparison among outputs of the ZCR, STE and DetectVoiced
+silence detection and removal method is as shown in table below. By
+listening each output, we compared it with orignal audio clip. The
+putput of ZCR and DetectVoiced methods were found to be of
+good quality, however STE based method performed poorly. We
+observed that the audio voices were overlapping in case of STE.
+Though there are many methods for detecting silence in an audio but no method can guarantee a 100% silence removal. These silence removal/detection procedures often result in trimming of the speech data. In case of ZCR, there were many segments which were still prevailing silence. Therefore, the DetectVoiced generated results which were chosen in the framework.
+<center>
+    <p style="text-align: center; align-content: center">
+    <table style="width:50%;align-content: center;text-align: center" border="5" bordercolor = "black">
+        <caption>A comparison of final audio length after applying
+various silence detection and removal techniques. Original
+audio length is displayed under column " Time Length "</caption>
+  <tr>
+    <th>Audio Files</th>
+    <th>Time Length</th> 
+    <th>ZCR</th>
+    <th>STE</th>
+    <th>DetectVoiced</th>
+  </tr>
+  <tr>
+    <td>Audio 1</td>
+    <td>1m : 54s</td> 
+    <td>1m : 46s</td>
+    <td>54s</td>
+    <td>1m : 23s</td>
+  </tr>
+  <tr>
+    <td>Audio 2</td>
+    <td>2m : 10s</td> 
+    <td>1m : 48s</td>
+    <td>58s</td>
+    <td>1m : 29s</td>
+  </tr>    
+  <tr>
+    <td>Audio 3</td>
+    <td>10m : 18s</td> 
+    <td>8m : 40s</td>
+    <td>3m : 39s</td>
+    <td>6m : 36s</td>      
         
-        <samp>
-            Want to see it in action? Place your cursor on the <!-- <samp> --> tag above and press
-            <kbd>Cmd/Ctrl + E</kbd>. You should see a CSS quick editor appear above, showing the CSS rule that
-            applies to it. Quick Edit works in class and id attributes as well. You can use it with your
-            LESS and SCSS files also.
-            
-            You can create new rules the same way. Click in one of the <!-- <p> --> tags above and press
-            <kbd>Cmd/Ctrl + E</kbd>. There are no rules for it right now, but you can click the New Rule
-            button to add a new rule for <!-- <p> -->.
-        </samp>
+  </tr>
+        <tr>
+    <td>Audio 4</td>
+    <td>50m : 38s</td> 
+    <td>44m : 34s</td>
+    <td>24m : 39s</td>
+    <td>38m : 37s</td>      
         
-        <a href="screenshots/quick-edit.png">
-            <img alt="A screenshot showing CSS Quick Edit" src="screenshots/quick-edit.png" />
-        </a>
+  </tr>
+        <tr>
+    <td>Audio 5</td>
+    <td>24m : 54s</td> 
+    <td>23m : 13s</td>
+    <td>11m : 36s</td>
+    <td>19m : 43s</td>      
         
-        <p>
-            You can use the same shortcut to edit other things as well - like functions in JavaScript,
-            colors, and animation timing functions - and we're adding more and more all the time.
-        </p>
-        <p>
-            For now inline editors cannot be nested, so you can only use Quick Edit while the cursor
-            is in a "full size" editor.
-        </p>
+  </tr>
+</table>
+    </p>
+    </center>
+    
+       <h2> Speaker Change Detection </h2>
+       Now once we detect and remove the silence present in an audio,
+our next task was to detect the speaker changes in the silence free
+audio fle. This step will help us in forming clusters of teacher and
+students. One cluster will represent a particular individual. Below
+we will describe various speaker change detection methods which
+we have explored and reasoning behind final opted method.
         
-        <!--
-            LIVE PREVIEW
-        -->
-        <h3>Preview HTML and CSS changes live in the browser</h3>
-        <p>
-            You know that "save/reload dance" we've been doing for years? The one where you make changes in
-            your editor, hit save, switch to the browser and then refresh to finally see the result?
-            With Brackets, you don't have to do that dance.
-        </p>
-        <p>
-            Brackets will open a <em>live connection</em> to your local browser and push HTML and CSS updates as you
-            type! You might already be doing something like this today with browser-based tools, but with Brackets
-            there is no need to copy and paste the final code back into the editor. Your code runs in the
-            browser, but lives in your editor!
-        </p>
+        <h4>Support Vector Machine based model </h4>
+    We created positive and negative training
+dataset with 7875 and 2160 instances respectively. We used MFCC
+features (273 dimensional feature vector) and trained SVM model.
+Now whenever an input signal is feeded to the system it takes a
+sliding window of 2s and calculate the MFCC features of the corresponding window. If the model suggests it as a speaker change
+segment then the window is classifed as speaker change segment.
         
-        <h3>Live Highlight HTML elements and CSS rules</h3>
-        <p>
-            Brackets makes it easy to see how your changes in HTML and CSS will affect the page. When your cursor
-            is on a CSS rule, Brackets will highlight all affected elements in the browser. Similarly, when editing
-            an HTML file, Brackets will highlight the corresponding HTML elements in the browser.
-        </p>
+
+    <center>
+    <p style="text-align: center; align-content: center">
+    <table style="width:40%;align-content: center;text-align: center" border="5" bordercolor = "black">
+        <caption>Speaker change detection using SVM classifer. Precision and recall were calculated for diﬀerent audio clips
+The results are shown below.</caption>
+  <tr>
+    <th>Audio Files</th>
+    <th>Precision</th> 
+    <th>Recall</th>
+  </tr>
+  <tr>
+    <td>Audio 1</td>
+    <td>20.8 %</td> 
+    <td>100 %</td>
+    
+  </tr>
+  <tr>
+    <td>Audio 2</td>
+    <td>9.8 %</td> 
+    <td>71.41 %</td>
+    
+  </tr>    
+  <tr>
+    <td>Audio 3</td>
+    <td>21.4 %</td> 
+    <td>100 %</td>
+      
         
-        <samp>
-            If you have Google Chrome installed, you can try this out yourself. Click on the lightning bolt
-            icon in the top right corner of your Brackets window or hit <kbd>Cmd/Ctrl + Alt + P</kbd>. When
-            Live Preview is enabled on an HTML document, all linked CSS documents can be edited in real-time.
-            The icon will change from gray to gold when Brackets establishes a connection to your browser.
-            
-            Now, place your cursor on the <!-- <img> --> tag above. Notice the blue highlight that appears
-            around the image in Chrome. Next, use <kbd>Cmd/Ctrl + E</kbd> to open up the defined CSS rules.
-            Try changing the size of the border from 10px to 20px or change the background
-            color from "transparent" to "hotpink". If you have Brackets and your browser running side-by-side, you
-            will see your changes instantly reflected in your browser. Cool, right?
-        </samp>
+  </tr>
+        <tr>
+    <td>Audio 4</td>
+    <td>10 %</td> 
+    <td>33.33 %</td>
+        </tr>    
+
+</table>
+    </p>
+    </center>
+    
+
+ <h4>STE based speaker change model </h4>
+    The main argument
+for using STE as a speaker change model is because that whenever
+there is a speaker change from speaker A to speaker B we observe a
+sudden dip in STE since during transition silence is observed in that
+particular segment. Hence, during a speaker change the short term
+energy becomes close to zero. We calculated the STE in the sliding
+window using a window size of 1s with an overlap of 0.5s. After the
+STE calculation for each window, we extracted all the local minimas
+(possible speaker change points) and then applied thresholding on
+these minimas in order to detect the speaker change. We take a 2
+second interval around each local minima (+1 sec and -1 sec) and
+marked the point with least value i.e. choosing a global minima in
+a localized window of 2s. Then these marked points are considered
+as the fnal speaker change points. The results are as shown in table below:
+
+
+       <center>
+    <p style="text-align: center; align-content: center">
+    <table style="width:40%;align-content: center;text-align: center" border="5" bordercolor = "black">
+        <caption>STE based speaker change detection. Results in
+terms of precision and recall were calculated for various audio clips</caption>
+  <tr>
+    <th>Audio Files</th>
+    <th>Precision</th> 
+    <th>Recall</th>
+  </tr>
+  <tr>
+    <td>Audio 1</td>
+    <td>40 %</td> 
+    <td>80 %</td>
+    
+  </tr>
+  <tr>
+    <td>Audio 2</td>
+    <td>20.69 %</td> 
+    <td>85.71 %</td>
+    
+  </tr>    
+  <tr>
+    <td>Audio 3</td>
+    <td>60 %</td> 
+    <td>100 %</td>
+      
         
-        <p class="note">
-            Today, Brackets only supports Live Preview for HTML and CSS. However, in the current version, changes to
-            JavaScript files are automatically reloaded when you save. We are currently working on Live Preview
-            support for JavaScript. Live previews are also only possible with Google Chrome, but we hope
-            to bring this functionality to all major browsers in the future.
-        </p>
+  </tr>
+        <tr>
+    <td>Audio 4</td>
+    <td>28.57 %</td> 
+    <td>66.66 %</td>
+        </tr>    
+
+</table>
+    </p>
+    </center>
+    
+
+
+ <h4>MFCC + KL distance based model </h4>
+    In this particular
+method we choose two windows of size 2s with an overlap of 1s.
+Then in those subsequent segments we extracted the MFCC features
+of each segment and calculated the KL divergence (distance metric)
+between the windows. If the distance is greater than a threshold
+then the windows belong to diﬀerent speakers. KL divergence calculates the distance between two probability distribution functions and hence for that we extracted the MFCC features of a window and then ftted them with a normal distribution since it is
+found that MFCC features often follow normal distribution. The formula for Kl divergence is:
+
+<h4>$$D_KL(P||Q) = \sum_{i} P(i)  \log{\frac{P(i)}{Q(i)}}$$</h4>
+
+
+       <center>
+    <p style="text-align: center; align-content: center">
+    <table style="width:40%;align-content: center;text-align: center" border="5" bordercolor = "black">
+        <caption>MFCC + KL based results of speaker change detection</caption>
+  <tr>
+    <th>Audio Files</th>
+    <th>Precision</th> 
+    <th>Recall</th>
+  </tr>
+  <tr>
+    <td>Audio 1</td>
+    <td>42.86 %</td> 
+    <td>60 %</td>
+    
+  </tr>
+  <tr>
+    <td>Audio 2</td>
+    <td>23.53 %</td> 
+    <td>57.14 %</td>
+    
+  </tr>    
+  <tr>
+    <td>Audio 3</td>
+    <td>75 %</td> 
+    <td>100 %</td>
+      
         
-        <h3>Quick View</h3>
-        <p>
-            For those of us who haven't yet memorized the color equivalents for HEX or RGB values, Brackets makes
-            it quick and easy to see exactly what color is being used. In either CSS or HTML, simply hover over any
-            color value or gradient and Brackets will display a preview of that color/gradient automatically. The
-            same goes for images: simply hover over the image link in the Brackets editor and it will display a
-            thumbnail preview of that image.
-        </p>
+  </tr>
+        <tr>
+    <td>Audio 4</td>
+    <td>33.33 %</td> 
+    <td>66.66 %</td>
+        </tr>    
+
+</table>
+    </p>
+    </center>
+    
         
-        <samp>
-            To try out Quick View for yourself, place your cursor on the <!-- <body> --> tag at the top of this
-            document and press <kbd>Cmd/Ctrl + E</kbd> to open a CSS quick editor. Now simply hover over any of the
-            color values within the CSS. You can also see it in action on gradients by opening a CSS quick editor
-            on the <!-- <html> --> tag and hovering over any of the background image values. To try out the image
-            preview, place your cursor over the screenshot image included earlier in this document.
-        </samp>
+<h4>Bayesian Information Criterion (BIC)</h4>
+
+We divided the
+audio sample into frames of fixed size. Now for every consecutive
+frame we have to identify whether there is a speaker change or
+not. We calculated MFCC features of every consecutive frames and
+modeled these features into multivariate normal distribution. 
+The calculation of BIC was done using equation :
+<h4>$$ \Delta BIC = BIC(M) - BIC(M_1) - BIC(M_2)$$</h4>
+where M1 & M2 are models of consecutive segments and M is
+model for the overall segment. Now if ∆BIC comes out to be negative this means that both segments belongs to diﬀerent speakers
+and hence was considered as a positive speaker change segment.
+
+<p>In our situation we want high recall as we can’t miss any potential speaker change point although false change points will not
+make any problem. Any false point if detected they will get merged
+in cluster merging step. Also in classroom scenario, generally there
+is usually one speaker speaking at a time and when the transition between speakers occurs there is a sudden decrease in energy
+(which is not silence part as it was removed in pre-processing step).
+Hence, we are able to capture that change with STE approach.
+</p>
+<p> 
+Analyzing the performance measure by various methods and seeing classroom scenario, STE method has been accepted for speaker
+change detection.</p>
+
+<h2>Clustering Audio Segments</h2>
+
+<p style = "text-align: center"><img src="Picture2.png" style = "height: 300px" > </p>
+        <p style="text-align: center">Figure 2: Clustering audio segments. This picture shows detailed ﬂow of Clustetring performed on a sample audio file. Feature descriptor of segment-4,5,6 are very similar to that of segment1, hence they got similar label as segment1.</p>
+
+Once we have detected all the possible speaker change points, our
+task is to cluster each segment into teacher and students. This will
+detect total number of distinct speakers in an audio. Clustering
+procedure for a sample audio file is shown in Figure 2. After getting potential speaker change points we marked our segments as
+segment1, segment2, segment3 and so on. Further we took window
+of 1 second across the whole audio and calculated MFCC feature
+for each window. Then feature descriptor for a segment is obtained
+as average on MFCC feature vector of all the windows falling in
+that segment. After that we used a Hierarchial Agglomerative Clustetring approach which is an unsupervised clustering method and
+works robust in classroom scenario.
+
+<h2>Question Detection</h2>
+
+<p style = "text-align: center"><img src="Picture3.png" style = "height: 300px" > </p>
+        <p style="text-align: center">Figure 3: Question Detection Steps</p>
+
+Our next task is to measure the number of questions asked by
+the student as well as teacher. To measure the above mentioned attributes we need to detect interrogative words in the speech. Speech
+to text conversion will help in answering these attributes. We convert our audio into text using IBM Watson speech-to-text API. We combine all the students ' speaking segment and convert them
+into text. After that we fnd total number of interrogative words
+in the text. The number of questions is equal to total number of interrogative words found in student text segment. Similarly we
+get answer of the attribute “Number of question asked by teacher”.
+For this each teacher speaking segment is converted to text. Presence of interrogative word in a particular segment tells that teacher
+is asking a question. Absence of interrogative word implies that
+teacher is not asking a question but teaching something. Hence
+by counting the presence across all teacher segments we know
+the number of question asked by the teacher. We have considered
+last 5 seconds of a teacher segment in order to detect presence of
+interrogative words, as a teachers questions is usually followed by
+a speaker change where students speak.
+
+<h2>Integrating Video Analysis</h2>
+We used video processing in order to improve our results and hence,
+refining the cluster labels assigned to each segment. For each frame
+of the video we applied methods for face detection & facial landmark
+localization for predicting Action Unit (AU) intensities with Support
+Vector Regression (SVR) ensembles using Openface. We used
+the model to predict 3 AUs (refer Figure 4): Lip Tightener (AU23), Lips Part (AU25) & Jaw Drop (AU26)
+which is commonly used while speaking. These results are using video of teacher only.
+
+<p style = "text-align: center"><img src="AU23.gif"><img src="AU25.gif"><img src="AU26.gif"></p>
+<p style = "text-align: center">Figure 4: (from left to right) Lip Tightener(AU23), Lips Part(AU25) and Jaw Drop(AU26)</p>
+
+Following heuristics are made in order to
+refine the clusters:
+
+<ul>
+    <li>We used the union of the result of AU23, AU25 & AU26 which
+indicates whether teacher is speaking or not in a particular
+frame</li>
+    <li>If face is detected in a particular frame then video result
+is given preference over audio otherwise audio outputs are
+considered.</li>
+</ul>
+
+<h2>Performance Evaluation</h2>
+       
+<h4>$$Accuracy = 100 - \frac{|experimental \quad value - actual \quad value|}{\max(experimental \quad value,actual \quad value)}$$</h4>
+
+<p>The data was recorded with a Google Pixel smartphone camera.
+The video resolution was 1080p with 30 frames per second. The
+audio was recorded at 48 KHz samples per second, 16 bits per
+sample. The results obtained using audio only and audio & video on 8 lectures (each of 25 mins) is as shown in table below:</p>
+
+       <center>
+    <p style="text-align: center; align-content: center">
+    <table style="width:50%;align-content: center;text-align: center" border="5" bordercolor = "black">
+        <caption>Average accuracy of measurement of each of the attributes</caption>
+  <tr>
+    <th>Description</th>
+    <th>Accuracy(Audio)</th> 
+    <th>Accuracy(Audio and Video)</th>
+  </tr>
+  <tr>
+    <td>Teacher speaking time</td>
+    <td>67.2 %</td> 
+    <td>76.38 %</td>
+    
+  </tr>
+  <tr>
+    <td>Student speaking time</td>
+    <td>19.38 %</td> 
+    <td>35.99 %</td>
+    
+  </tr>    
+  <tr>
+    <td>No. of Students talked</td>
+    <td>56.05 %</td> 
+    <td>56.05 %</td>      
+  </tr>
+  <tr>
+    <td>No. of questions asked by teacher</td>
+    <td>54.55 %</td> 
+    <td>45.35 %</td>
+  </tr>  
         
-        <h3>Need something else? Try an extension!</h3>
-        <p>
-            In addition to all the goodness that's built into Brackets, our large and growing community of
-            extension developers has built hundreds of extensions that add useful functionality. If there's
-            something you need that Brackets doesn't offer, more than likely someone has built an extension for
-            it. To browse or search the list of available extensions, choose <strong>File > Extension
-            Manager…</strong> and click on the "Available" tab. When you find an extension you want, just click
-            the "Install" button next to it.
-        </p>
-        
-        <!--
-            LET US KNOW WHAT YOU THINK
-        -->
-        <h2>Get involved</h2>
-        <p>
-            Brackets is an open-source project. Web developers from around the world are contributing to build
-            a better code editor. Many more are building extensions that expand the capabilities of Brackets.
-            Let us know what you think, share your ideas or contribute directly to the project.
-        </p>
-        <ul>
-            <li><a href="http://brackets.io">Brackets.io</a></li>
-            <li><a href="http://blog.brackets.io">Brackets Team Blog</a></li>
-            <li><a href="https://github.com/adobe/brackets">Brackets on GitHub</a></li>
-            <li><a href="https://brackets-registry.aboutweb.com">Brackets Extension Registry</a></li>
-            <li><a href="https://github.com/adobe/brackets/wiki">Brackets Wiki</a></li>
-            <li><a href="https://groups.google.com/forum/#!forum/brackets-dev">Brackets Developer Mailing List</a></li>
-            <li><a href="https://twitter.com/brackets">@brackets on Twitter</a></li>
-            <li>Chat with Brackets developers on IRC in <a href="http://webchat.freenode.net/?channels=brackets&uio=d4">#brackets on Freenode</a></li>
-        </ul>
+  <tr>
+    <td>No. of questions asked by students</td>
+    <td>19.34 %</td> 
+    <td>27.13 %</td>
+  </tr>      
+
+</table>
+    </p>
+    </center>
+
+
+<p></p>
+<p></p>
+<p></p>
+<div style="text-align: center;background: #80cbc4"><h3>Created By : Prakhar Jain & Swarna Sahay, Department of Computer Science & Engineering, IIT Ropar</h3></div>
+
         
     </body>
 </html>
-<!--
-
-    [[[[[[[[[[[[[[[      ]]]]]]]]]]]]]]]
-    [::::::::::::::      ::::::::::::::]
-    [::::::::::::::      ::::::::::::::]
-    [::::::[[[[[[[:      :]]]]]]]::::::]
-    [:::::[                      ]:::::]
-    [:::::[                      ]:::::]
-    [:::::[                      ]:::::]
-    [:::::[                      ]:::::]
-    [:::::[     CODE THE WEB     ]:::::]
-    [:::::[  http://brackets.io  ]:::::]
-    [:::::[                      ]:::::]
-    [:::::[                      ]:::::]
-    [:::::[                      ]:::::]
-    [:::::[                      ]:::::]
-    [::::::[[[[[[[:      :]]]]]]]::::::]
-    [::::::::::::::      ::::::::::::::]
-    [::::::::::::::      ::::::::::::::]
-    [[[[[[[[[[[[[[[      ]]]]]]]]]]]]]]]
-
--->
